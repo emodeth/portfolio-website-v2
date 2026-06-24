@@ -45,7 +45,9 @@ const Home = async () => {
     }
   }`;
 
-  const data = await client.fetch(query, {}, { next: { tags: ['sanity'] } });
+  const data = await client.fetch(query, {}, {
+    next: { revalidate: 900, tags: ["sanity"] },
+  });
   const { profile, projects } = data;
 
   const workExperience: WorkExperienceType[] = data.workExperience.map(
