@@ -58,11 +58,11 @@ const Home = async () => {
       type: string;
       workTitle: string;
       startDate: string;
-      endDate: string;
+      endDate: string | null;
     }) => ({
       ...experience,
       startDate: new Date(experience.startDate),
-      endDate: new Date(experience.endDate),
+      endDate: experience.endDate ? new Date(experience.endDate) : null,
     })
   );
 
