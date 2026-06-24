@@ -45,7 +45,9 @@ const Home = async () => {
     }
   }`;
 
-  const data = await client.fetch(query, {}, { next: { tags: ['sanity'] } });
+  const data = await client.fetch(query, {}, {
+    next: { revalidate: 900, tags: ["sanity"] },
+  });
   const { profile, projects } = data;
 
   const workExperience: WorkExperienceType[] = data.workExperience.map(
@@ -56,11 +58,11 @@ const Home = async () => {
       type: string;
       workTitle: string;
       startDate: string;
-      endDate: string;
+      endDate: string | null;
     }) => ({
       ...experience,
       startDate: new Date(experience.startDate),
-      endDate: new Date(experience.endDate),
+      endDate: experience.endDate ? new Date(experience.endDate) : null,
     })
   );
 

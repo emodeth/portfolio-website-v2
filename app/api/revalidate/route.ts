@@ -1,20 +1,38 @@
-import { revalidatePath } from "next/cache";
-import { NextRequest, NextResponse } from "next/server";
+import { revalidatePath, revalidateTag } from "next/cache";
+import { type NextRequest, NextResponse } from "next/server";
+import { parseBody } from "next-sanity/webhook";
+
+type WebhookPayload = {
+  _type?: string;
+  slug?: string;
+};
 
 export async function POST(request: NextRequest) {
-  const secret = request.nextUrl.searchParams.get("secret");
-  if (secret !== process.env.SANITY_REVALIDATE_SECRET) {
-    return NextResponse.json({ message: "Invalid secret" }, { status: 401 });
+  const secret = process.env.SANITY_REVALIDATE_SECRET;
+  if (!secret) {
+    return NextResponse.json(
+      { message: "Missing SANITY_REVALIDATE_SECRET" },
+      { status: 500 },
+    );
   }
 
   try {
-    const body = await request.json();
-    const { _type, slug } = body;
+    const { isValidSignature, body } = await parseBody<WebhookPayload>(
+      request,
+      secret,
+      true,
+    );
 
+    if (!isValidSignature) {
+      return NextResponse.json({ message: "Invalid signature" }, { status: 401 });
+    }
+
+    revalidateTag("sanity", { expire: 0 });
     revalidatePath("/");
 
-    if (_type === "project" && slug) {
-      revalidatePath(`/projects/${slug}`);
+    if (body?._type === "project" && body.slug) {
+      revalidateTag(`project-${body.slug}`, { expire: 0 });
+      revalidatePath(`/projects/${body.slug}`);
     }
 
     return NextResponse.json({ revalidated: true, now: Date.now() });

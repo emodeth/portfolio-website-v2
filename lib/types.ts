@@ -16,7 +16,7 @@ export interface WorkExperience {
   type: string;
   workTitle: string;
   startDate: Date;
-  endDate: Date;
+  endDate: Date | null;
 }
 
 export interface Tech {
