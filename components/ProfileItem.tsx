@@ -2,19 +2,18 @@ import { Profile } from "@/lib/types";
 
 const ProfileItem = ({ profile }: { profile: Profile }) => {
   return (
-    <div className="flex items-center justify-between mb-6 mt-9">
+    <header className="flex items-center justify-between">
       <div className="flex items-center gap-4">
-
         <div className="flex flex-col">
-          <h3 className="text-[16px] font-semibold text-gray-1200 leading-snug">
+          <h1 className="whitespace-nowrap text-[16px] font-semibold leading-[22px] tracking-tight text-gray-1200">
             {profile.name}
-          </h3>
-          <p className="text-[16px] text-gray-1100 leading-snug">
+          </h1>
+          <p className="text-[16px] font-normal leading-[22px] text-muted-foreground">
             {profile.jobTitle}
           </p>
         </div>
       </div>
-    </div>
+    </header>
   );
 };
 
