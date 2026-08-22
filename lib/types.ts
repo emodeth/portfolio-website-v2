@@ -37,4 +37,5 @@ export interface Project {
   photos: string[];
   content: string;
   techStack: Tech[];
+  category?: string;
 }

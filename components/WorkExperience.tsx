@@ -12,7 +12,13 @@ const WorkExperience = ({ workExperience }: WorkExperienceProps) => {
         Experience
       </h2>
 
-      <div className="group mt-2">
+      {/* relative wrapper — single vertical line connects all dots */}
+      {/* py-5 (20px) + mt-[7px] (7px) + half dot (3px) = 30px offset from each end */}
+      <div className="relative mt-1">
+        <div
+          className="absolute left-[2.5px] w-px bg-border"
+          style={{ top: "30px", bottom: "30px" }}
+        />
         {workExperience.map((experience) => (
           <WorkItem key={experience.id} experience={experience} />
         ))}
