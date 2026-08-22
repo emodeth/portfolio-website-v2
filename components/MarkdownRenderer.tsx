@@ -61,7 +61,7 @@ const defaultComponents: Components = {
       {children}
     </a>
   ),
-  code: ({ children, className, ...props }: any) => {
+  code: ({ children, className, ...props }) => {
     const match = /language-(\w+)/.exec(className || "");
     const isInline = !match && !children?.toString().includes("\n");
     return isInline ? (
