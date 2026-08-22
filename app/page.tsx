@@ -1,49 +1,28 @@
 import AboutMe from "@/components/AboutMe";
 import Footer from "@/components/Footer";
 import { workExperience } from "@/data/work-experience";
+import { projects } from "@/data/projects";
 import MaxWidthWrapper from "@/components/MaxWidthWrapper";
-import Projects from "@/components/Projects";
+import ProjectsComponent from "@/components/Projects";
 import WorkExperience from "@/components/WorkExperience";
-import { client } from "@/sanity/client";
 
-const Home = async () => {
-  const query = `{
-    "projects": *[_type == "project"] | order(id desc){
-      "id": _id,
-      slug,
-      title,
-      description,
-      "coverUrl": coverUrl.asset->url,
-      videoUrl,
-      codeUrl,
-      demoUrl,
-      "photos": photos[].asset->url,
-      content,
-      techStack[]->{
-        "id": _id,
-        name,
-        iconName
-      }
-    }
-  }`;
-
-  const data = await client.fetch(query, {}, {
-    next: { revalidate: 900, tags: ["sanity"] },
-  });
-  const { projects } = data;
-
+const Home = () => {
   return (
     <>
       <MaxWidthWrapper>
-        <AboutMe />
-        <WorkExperience workExperience={workExperience} />
-        <Projects projects={projects} />
+        <div className="animate-slide-in">
+          <AboutMe />
+        </div>
+        <div className="animate-slide-in delay-75">
+          <WorkExperience workExperience={workExperience} />
+        </div>
+        <div className="animate-slide-in delay-100">
+          <ProjectsComponent projects={projects} />
+        </div>
       </MaxWidthWrapper>
       <Footer />
     </>
   );
 };
-
-// Revalidation handled by webhook
 
 export default Home;

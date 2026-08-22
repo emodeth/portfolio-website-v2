@@ -1,8 +1,9 @@
 "use client";
 
 import * as React from "react";
-import { Moon, Sun } from "lucide-react";
+import { Contrast } from "lucide-react";
 import { useTheme } from "@/components/ThemeContext";
+import { Tooltip } from "@/components/ui/tooltip";
 
 const Footer = () => {
   const { resolvedTheme, setTheme } = useTheme();
@@ -10,39 +11,55 @@ const Footer = () => {
 
   React.useEffect(() => setMounted(true), []);
 
+  React.useEffect(() => {
+    const handleKeyDown = (e: KeyboardEvent) => {
+      const activeElement = document.activeElement;
+      if (
+        activeElement &&
+        (activeElement.tagName === "INPUT" ||
+          activeElement.tagName === "TEXTAREA" ||
+          activeElement.hasAttribute("contenteditable"))
+      ) {
+        return;
+      }
+
+      if (e.key === "d" || e.key === "D") {
+        e.preventDefault();
+        setTheme(resolvedTheme === "dark" ? "light" : "dark");
+      }
+    };
+
+    window.addEventListener("keydown", handleKeyDown);
+    return () => window.removeEventListener("keydown", handleKeyDown);
+  }, [resolvedTheme, setTheme]);
+
   const isDark = mounted && resolvedTheme === "dark";
 
   return (
-    <footer className="mx-auto max-w-[640px] px-6 pb-6 sm:pb-8">
+    <footer className="mx-auto max-w-[640px] px-6 pb-3">
       <div className="flex min-h-11 items-center justify-between border-t border-border pt-3 text-xs leading-5 text-muted-foreground">
-        <p className="tabular-nums">
-          Last updated · Aug 22, 2026
-        </p>
+        <p className="tabular-nums">Last updated · Aug 22, 2026</p>
 
-        <button
-          type="button"
-          onClick={() => setTheme(isDark ? "light" : "dark")}
-          className="group relative -my-2 grid size-10 place-items-center rounded-full text-muted-foreground outline-none transition-[color,background-color,transform] hover:bg-accent hover:text-foreground focus-visible:ring-2 focus-visible:ring-ring active:scale-[0.96]"
-          aria-label={isDark ? "Switch to light theme" : "Switch to dark theme"}
-          title={isDark ? "Switch to light theme" : "Switch to dark theme"}
+        <Tooltip
+          content={
+            <div className="flex items-center gap-1.5">
+              <span>Toggle Mode</span>
+              <kbd className="inline-flex h-4 select-none items-center rounded border border-background/20 bg-background/10 px-1.5 font-mono text-[9px] font-medium text-background/90">
+                D
+              </kbd>
+            </div>
+          }
         >
-          <Sun
-            aria-hidden="true"
-            className={`absolute size-4 transition-[opacity,transform,filter] duration-200 ease-[cubic-bezier(0.2,0,0,1)] ${
-              isDark
-                ? "scale-[0.25] opacity-0 blur-[4px]"
-                : "scale-100 opacity-100 blur-0"
-            }`}
-          />
-          <Moon
-            aria-hidden="true"
-            className={`absolute size-4 transition-[opacity,transform,filter] duration-200 ease-[cubic-bezier(0.2,0,0,1)] ${
-              isDark
-                ? "scale-100 opacity-100 blur-0"
-                : "scale-[0.25] opacity-0 blur-[4px]"
-            }`}
-          />
-        </button>
+          <button
+            type="button"
+            onClick={() => setTheme(isDark ? "light" : "dark")}
+            className="group relative -my-2 flex size-8 items-center justify-center rounded-[8px] text-gray-1100 hover:bg-secondary hover:text-foreground transition-[color,background-color,scale] duration-150 active:scale-[0.96] focus-visible:outline-2 focus-visible:outline-offset-1 focus-visible:outline-ring"
+            aria-label={isDark ? "Switch to light theme" : "Switch to dark theme"}
+            title={isDark ? "Switch to light theme" : "Switch to dark theme"}
+          >
+            <Contrast aria-hidden="true" className="size-[18px]" />
+          </button>
+        </Tooltip>
 
         <p>© 2026 Emirhan Keskin</p>
       </div>
