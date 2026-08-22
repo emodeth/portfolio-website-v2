@@ -9,11 +9,11 @@ const ProjectItem = ({ project }: { project: Project }) => {
   const projectHref = `/projects/${project.slug}`;
 
   return (
-    <article className="group">
+    <article className="w-full opacity-100 transition-opacity duration-200 group-hover:opacity-30 hover:opacity-100">
       <Link
         href={projectHref}
         aria-label={`View ${project.title} project`}
-        className="block rounded-[10px] bg-card p-1 shadow-[0_0_0_1px_rgba(0,0,0,0.10),0_1px_2px_-1px_rgba(0,0,0,0.08),0_2px_5px_rgba(0,0,0,0.04)] transition-[box-shadow] duration-200 ease-out hover:shadow-[0_0_0_1px_rgba(0,0,0,0.14),0_2px_4px_-1px_rgba(0,0,0,0.10),0_4px_8px_rgba(0,0,0,0.06)] focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-ring dark:shadow-[0_0_0_1px_rgba(255,255,255,0.10)] dark:hover:shadow-[0_0_0_1px_rgba(255,255,255,0.16)]"
+        className="block rounded-[10px] bg-card p-1 shadow-[0_0_0_1px_rgba(0,0,0,0.10),0_1px_2px_-1px_rgba(0,0,0,0.08),0_2px_5px_rgba(0,0,0,0.04)] focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-ring dark:shadow-[0_0_0_1px_rgba(255,255,255,0.10)]"
       >
         <div className="relative aspect-video w-full overflow-hidden rounded-md bg-muted">
           <Image
@@ -21,7 +21,7 @@ const ProjectItem = ({ project }: { project: Project }) => {
             alt={`${project.title} preview`}
             fill
             sizes="(max-width: 640px) calc(100vw - 48px), 592px"
-            className="object-cover outline -outline-offset-1 outline-black/10 transition-transform duration-300 ease-out group-hover:scale-[1.015] dark:outline-white/10"
+            className="object-cover outline -outline-offset-1 outline-black/10 dark:outline-white/10"
           />
         </div>
       </Link>

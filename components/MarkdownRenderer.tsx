@@ -1,3 +1,4 @@
+import React from "react";
 import ReactMarkdown, { Components } from "react-markdown";
 import remarkGfm from "remark-gfm";
 
@@ -6,27 +7,62 @@ interface MarkdownRendererProps {
   className?: string;
 }
 
+const getHeadingId = (children: React.ReactNode): string => {
+  if (!children) return "";
+  let text = "";
+  if (typeof children === "string" || typeof children === "number") {
+    text = String(children);
+  } else if (Array.isArray(children)) {
+    text = children.map(c => {
+      if (typeof c === "string" || typeof c === "number") return c;
+      if (React.isValidElement(c)) {
+        return getHeadingId((c as React.ReactElement<any>).props.children);
+      }
+      return "";
+    }).join("");
+  } else if (React.isValidElement(children)) {
+    text = getHeadingId((children as React.ReactElement<any>).props.children);
+  }
+  return text
+    .toLowerCase()
+    .replace(/[^a-z0-9\s-]/g, "")
+    .trim()
+    .replace(/\s+/g, "-");
+};
+
 const defaultComponents: Components = {
-  h1: ({ children }) => (
-    <h1 className="text-[16px] font-bold text-gray-1200 mt-12 mb-6 tracking-tight">
-      {children}
-    </h1>
-  ),
-  h2: ({ children }) => (
-    <h2 className="text-[16px] font-bold text-gray-1200 mt-12 mb-6 tracking-tight flex items-center gap-2">
-      {children}
-    </h2>
-  ),
-  h3: ({ children }) => (
-    <h3 className="text-[16px] font-bold text-gray-1200 mt-8 mb-4 tracking-tight">
-      {children}
-    </h3>
-  ),
-  h4: ({ children }) => (
-    <h4 className="text-[16px] font-bold text-gray-1200 mt-6 mb-3">
-      {children}
-    </h4>
-  ),
+  h1: ({ children }) => {
+    const id = getHeadingId(children);
+    return (
+      <h1 id={id} className="text-[16px] font-bold text-gray-1200 mt-12 mb-6 tracking-tight scroll-mt-24">
+        {children}
+      </h1>
+    );
+  },
+  h2: ({ children }) => {
+    const id = getHeadingId(children);
+    return (
+      <h2 id={id} className="text-[16px] font-bold text-gray-1200 mt-12 mb-6 tracking-tight flex items-center gap-2 scroll-mt-24">
+        {children}
+      </h2>
+    );
+  },
+  h3: ({ children }) => {
+    const id = getHeadingId(children);
+    return (
+      <h3 id={id} className="text-[16px] font-bold text-gray-1200 mt-8 mb-4 tracking-tight scroll-mt-24">
+        {children}
+      </h3>
+    );
+  },
+  h4: ({ children }) => {
+    const id = getHeadingId(children);
+    return (
+      <h4 id={id} className="text-[16px] font-bold text-gray-1200 mt-6 mb-3 scroll-mt-24">
+        {children}
+      </h4>
+    );
+  },
   p: ({ children }) => (
     <p className="text-[16px] leading-7 text-text-paragraph mb-6 last:mb-0 has-[>strong:first-child]:mb-2">
       {children}

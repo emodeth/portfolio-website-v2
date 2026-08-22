@@ -12,7 +12,7 @@ const Projects = ({ projects }: ProjectsProps) => {
         Projects
       </h2>
 
-      <div className="flex flex-col gap-7 mt-6">
+      <div className="group flex flex-col gap-7 mt-6">
         {projects.map((project) => (
           <ProjectItem key={project.id} project={project} />
         ))}
