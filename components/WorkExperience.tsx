@@ -1,23 +1,23 @@
-import { WorkExperience as WorkExperienceType } from "@/lib/types";
+import { WorkExperienceEntry } from "@/data/work-experience";
 import WorkItem from "./WorkItem";
 
 interface WorkExperienceProps {
-  workExperience: WorkExperienceType[];
+  workExperience: WorkExperienceEntry[];
 }
 
 const WorkExperience = ({ workExperience }: WorkExperienceProps) => {
   return (
-    <div className="mt-16 flex flex-col">
-      <h2 className="font-bold text-gray-1200 mb-5">
-        Work Experience
+    <section className="mt-16">
+      <h2 className="text-wrap-balance text-[16px] font-semibold leading-[22px] tracking-tight text-foreground">
+        Experience
       </h2>
 
-      <div className="flex flex-col gap-8">
+      <div className="group mt-2">
         {workExperience.map((experience) => (
           <WorkItem key={experience.id} experience={experience} />
         ))}
       </div>
-    </div>
+    </section>
   );
 };
 
