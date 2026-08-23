@@ -1,4 +1,4 @@
-import { WorkExperienceEntry } from "@/data/work-experience";
+import { WorkExperienceEntry } from "@/lib/queries";
 import WorkItem from "./WorkItem";
 
 interface WorkExperienceProps {

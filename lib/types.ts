@@ -19,12 +19,6 @@ export interface WorkExperience {
   endDate: Date | null;
 }
 
-export interface Tech {
-  id: string | number;
-  name: string;
-  iconName: string;
-}
-
 export interface Project {
   id: string | number;
   slug: string;
@@ -36,6 +30,6 @@ export interface Project {
   demoUrl: string | null;
   photos: string[];
   content: string;
-  techStack: Tech[];
+  techStack: string[];
   category?: string;
 }

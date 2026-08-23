@@ -1,4 +1,4 @@
-import { WorkExperienceEntry } from "@/data/work-experience";
+import { WorkExperienceEntry } from "@/lib/queries";
 
 const WorkItem = ({ experience }: { experience: WorkExperienceEntry }) => {
   return (

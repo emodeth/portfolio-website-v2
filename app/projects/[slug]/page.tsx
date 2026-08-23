@@ -6,16 +6,18 @@ import { Globe, Youtube } from "lucide-react";
 import MaxWidthWrapper from "@/components/MaxWidthWrapper";
 import ProjectShowcase from "@/components/ProjectShowcase";
 import Footer from "@/components/Footer";
-import { projects } from "@/data/projects";
+import { getProjectBySlug, getProjectSlugs } from "@/lib/queries";
 import { PiArrowBendUpLeftBold } from "react-icons/pi";
 import { IoLogoGithub } from "react-icons/io";
 import { MDXRemote } from "next-mdx-remote/rsc";
 
-export const generateStaticParams = () => {
-  return projects.map((project) => ({
-    slug: project.slug,
-  }));
+export const generateStaticParams = async () => {
+  const slugs = await getProjectSlugs();
+  return slugs.map((s) => ({ slug: s.slug }));
 };
+
+export const revalidate = 60; // ISR: re-generate at most every 60 seconds
+
 
 export const generateMetadata = async ({
   params,
@@ -23,7 +25,7 @@ export const generateMetadata = async ({
   params: Promise<{ slug: string }>;
 }): Promise<Metadata> => {
   const { slug } = await params;
-  const project = projects.find((p) => p.slug === slug);
+  const project = await getProjectBySlug(slug);
 
   if (!project) {
     return { title: "Project not found" };
@@ -138,7 +140,7 @@ const ProjectPage = async ({
   params: Promise<{ slug: string }>;
 }) => {
   const { slug } = await params;
-  const project = projects.find((p) => p.slug === slug);
+  const project = await getProjectBySlug(slug);
 
   if (!project) {
     notFound();
