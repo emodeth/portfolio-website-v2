@@ -44,3 +44,6 @@ next-env.d.ts
 .agent
 
 /app/generated/prisma
+
+# local scratch files
+/scratch
