@@ -48,7 +48,6 @@ const ProjectVideo = ({ project }: { project: Project }) => {
       onClick={handlePlay}
       className="relative h-full w-full cursor-pointer group overflow-hidden bg-black select-none"
     >
-      {/* Poster Image */}
       {project.coverUrl ? (
         <Image
           src={project.coverUrl}
@@ -64,10 +63,8 @@ const ProjectVideo = ({ project }: { project: Project }) => {
         </div>
       )}
 
-      {/* Dark tint overlay */}
       <div className="absolute inset-0 bg-black/30 group-hover:bg-black/40 transition-colors duration-300" />
 
-      {/* Minimal play button */}
       <div className="absolute inset-0 flex items-center justify-center">
         <div className="flex h-9 w-9 items-center justify-center rounded-full bg-white/15 border border-white/20 backdrop-blur-sm text-white transition-all duration-200 group-hover:bg-white/25 active:scale-95">
           <Play className="h-3.5 w-3.5 fill-current text-white translate-x-[1px]" />

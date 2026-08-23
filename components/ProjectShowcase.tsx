@@ -23,7 +23,6 @@ export default function ProjectShowcase({ project }: ProjectShowcaseProps) {
 
   return (
     <div className="space-y-3 animate-slide-in delay-100">
-      {/* Media */}
       <div className="w-full">
         {activeTab === "video" && hasVideo ? (
           <div className="relative overflow-hidden rounded-md border border-border aspect-video">
@@ -34,7 +33,6 @@ export default function ProjectShowcase({ project }: ProjectShowcaseProps) {
         )}
       </div>
 
-      {/* Switcher Buttons (Only show if both are present) */}
       {hasVideo && hasPhotos && (
         <div className="flex items-center justify-center gap-2 select-none">
           <button
