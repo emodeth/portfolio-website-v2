@@ -36,17 +36,16 @@ const ProjectGallery = ({ project }: { project: Project }) => {
 
   return (
     <div className="relative w-full">
+      {/* aspect-video wrapper — sets the height; children positioned absolute fill it */}
       <div className="relative overflow-hidden rounded-md bg-muted border border-border aspect-video">
-        <div className="relative h-full w-full group/gallery select-none">
+        <div className="absolute inset-0 group/gallery select-none">
           <Carousel className="w-full h-full" setApi={setApi}>
             <CarouselContent className="h-full -ml-0">
               {project.photos.map((photo, index) => (
                 <CarouselItem key={index} className="h-full pl-0">
                   <div
                     className="relative h-full w-full overflow-hidden cursor-zoom-in group"
-                    onClick={() => {
-                      setSelectedIndex(index);
-                    }}
+                    onClick={() => setSelectedIndex(index)}
                   >
                     <Image
                       src={photo}
@@ -56,7 +55,6 @@ const ProjectGallery = ({ project }: { project: Project }) => {
                       priority={index === 0}
                       className="object-cover transition-transform duration-500 group-hover:scale-[1.03]"
                     />
-                    {/* Visual shade overlay on hover */}
                     <div className="absolute inset-0 bg-black/0 group-hover:bg-black/5 transition-colors duration-300" />
                   </div>
                 </CarouselItem>
@@ -68,11 +66,11 @@ const ProjectGallery = ({ project }: { project: Project }) => {
               {current + 1} / {project.photos.length}
             </div>
 
-            {/* Internal Glassmorphic Navigation Buttons */}
+            {/* Navigation Buttons */}
             <CarouselPrevious className="absolute left-4 top-1/2 -translate-y-1/2 z-10 flex h-9 w-9 items-center justify-center rounded-full bg-black/40 hover:bg-black/60 dark:bg-black/50 dark:hover:bg-black/70 text-white border border-white/10 backdrop-blur-md opacity-0 group-hover/gallery:opacity-100 transition-all duration-300 -translate-x-2 group-hover/gallery:translate-x-0 cursor-pointer disabled:opacity-0 group-hover/gallery:disabled:opacity-20 pointer-events-auto" />
             <CarouselNext className="absolute right-4 top-1/2 -translate-y-1/2 z-10 flex h-9 w-9 items-center justify-center rounded-full bg-black/40 hover:bg-black/60 dark:bg-black/50 dark:hover:bg-black/70 text-white border border-white/10 backdrop-blur-md opacity-0 group-hover/gallery:opacity-100 transition-all duration-300 translate-x-2 group-hover/gallery:translate-x-0 cursor-pointer disabled:opacity-0 group-hover/gallery:disabled:opacity-20 pointer-events-auto" />
 
-            {/* Thumbnail Navigation Strip */}
+            {/* Thumbnail Strip */}
             <div className="absolute bottom-4 left-4 right-4 z-10 flex justify-center opacity-0 group-hover/gallery:opacity-100 transition-all duration-300 translate-y-2 group-hover/gallery:translate-y-0">
               <div className="flex gap-1.5 p-1 rounded-lg bg-black/40 dark:bg-black/60 backdrop-blur-md border border-white/10 max-w-full overflow-x-auto scrollbar-none">
                 {project.photos.map((photo, index) => (
@@ -117,5 +115,3 @@ const ProjectGallery = ({ project }: { project: Project }) => {
 };
 
 export default ProjectGallery;
-
-

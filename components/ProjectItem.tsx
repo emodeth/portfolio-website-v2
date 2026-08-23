@@ -20,6 +20,7 @@ const ProjectItem = ({ project }: { project: Project }) => {
             src={project.coverUrl}
             alt={`${project.title} preview`}
             fill
+            quality={100}
             sizes="(max-width: 640px) calc(100vw - 48px), 592px"
             className="object-cover outline -outline-offset-1 outline-black/10 dark:outline-white/10"
           />
