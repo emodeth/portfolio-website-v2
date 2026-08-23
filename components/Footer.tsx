@@ -36,9 +36,11 @@ const Footer = () => {
   const isDark = mounted && resolvedTheme === "dark";
 
   return (
-    <footer className="mx-auto max-w-[640px] px-6 pb-3">
+    <footer className="mx-auto max-w-[692px] px-6 pb-3">
       <div className="flex min-h-11 items-center justify-between border-t border-border pt-3 text-xs leading-5 text-muted-foreground">
-        <p className="tabular-nums">Last updated · Aug 22, 2026</p>
+        <p className="hidden sm:block tabular-nums whitespace-nowrap">
+          Last updated · Aug 22, 2026
+        </p>
 
         <Tooltip
           content={
@@ -61,7 +63,7 @@ const Footer = () => {
           </button>
         </Tooltip>
 
-        <p>© 2026 Emirhan Keskin</p>
+        <p className="whitespace-nowrap">© 2026 Emirhan Keskin</p>
       </div>
     </footer>
   );
