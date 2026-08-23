@@ -33,6 +33,16 @@ interface WorkExperienceRow {
   work_experience_technologies: { name: string; position: number }[];
 }
 
+interface AboutMeRow {
+  id: string;
+  name: string;
+  role: string;
+  bio: string[];
+  email: string;
+  github_url: string;
+  resume_url: string;
+}
+
 // ─────────────────────────────────────────────
 // Mappers
 // ─────────────────────────────────────────────
@@ -82,6 +92,28 @@ function mapWorkExperience(row: WorkExperienceRow): WorkExperienceEntry {
     dateRange: row.date_range ?? "",
     description: row.description ?? "",
     technologies,
+  };
+}
+
+export interface AboutMe {
+  id: string;
+  name: string;
+  role: string;
+  bio: string[];
+  email: string;
+  githubUrl: string;
+  resumeUrl: string;
+}
+
+function mapAboutMe(row: AboutMeRow): AboutMe {
+  return {
+    id: row.id,
+    name: row.name,
+    role: row.role,
+    bio: row.bio ?? [],
+    email: row.email,
+    githubUrl: row.github_url,
+    resumeUrl: row.resume_url,
   };
 }
 
@@ -176,6 +208,24 @@ export const getWorkExperience = unstable_cache(
   },
   ["work-experience"],
   { revalidate: 60, tags: ["work-experience"] }
+);
+
+export const getAboutMe = unstable_cache(
+  async (): Promise<AboutMe | null> => {
+    const { data, error } = await supabase
+      .from("about_me")
+      .select("id, name, role, bio, email, github_url, resume_url")
+      .single();
+
+    if (error) {
+      console.error("[getAboutMe] Supabase error:", error.message);
+      return null;
+    }
+
+    return mapAboutMe(data as unknown as AboutMeRow);
+  },
+  ["about-me"],
+  { revalidate: 60, tags: ["about-me"] }
 );
 
 // ─────────────────────────────────────────────

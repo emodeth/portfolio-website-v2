@@ -5,19 +5,22 @@ import Footer from "@/components/Footer";
 import MaxWidthWrapper from "@/components/MaxWidthWrapper";
 import ProjectsComponent from "@/components/Projects";
 import WorkExperience from "@/components/WorkExperience";
-import { getProjects, getWorkExperience } from "@/lib/queries";
+import { getAboutMe, getProjects, getWorkExperience } from "@/lib/queries";
 
 const Home = async () => {
-  const [projects, workExperience] = await Promise.all([
+  const [aboutMe, projects, workExperience] = await Promise.all([
+    getAboutMe(),
     getProjects(),
     getWorkExperience(),
   ]);
+
+  if (!aboutMe) return null;
 
   return (
     <>
       <MaxWidthWrapper>
         <div className="animate-slide-in">
-          <AboutMe />
+          <AboutMe data={aboutMe} />
         </div>
         <div className="animate-slide-in delay-75">
           <WorkExperience workExperience={workExperience} />
