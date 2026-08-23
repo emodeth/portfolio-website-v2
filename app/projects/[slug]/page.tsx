@@ -18,7 +18,6 @@ export const generateStaticParams = async () => {
 
 export const revalidate = 60; // ISR: re-generate at most every 60 seconds
 
-
 export const generateMetadata = async ({
   params,
 }: {
@@ -32,7 +31,7 @@ export const generateMetadata = async ({
   }
 
   return {
-    title: `${project.title} | Portfolio`,
+    title: `${project.title} | Emirhan Keskin`,
     description: project.description,
   };
 };
@@ -150,7 +149,6 @@ const ProjectPage = async ({
     <>
       <MaxWidthWrapper>
         <article className="pb-4 md:pb-8 max-w-3xl mx-auto space-y-4">
-          {/* Top Navigation & Action Buttons Row */}
           <div className="flex items-center justify-between gap-4 animate-slide-in">
             <Link
               href="/"
@@ -197,7 +195,6 @@ const ProjectPage = async ({
             </div>
           </div>
 
-          {/* Header Title */}
           <header className="space-y-1.5 animate-slide-in delay-75">
             <h1 className="text-[24px] font-semibold leading-[33px] text-[#000000] dark:text-[#ffffff] font-sans">
               {project.title}
@@ -207,10 +204,8 @@ const ProjectPage = async ({
             </p>
           </header>
 
-          {/* Unified Media Showcase (video + gallery switcher) */}
           <ProjectShowcase project={project} />
 
-          {/* Content Body rendered using MDXRemote */}
           {project.content && (
             <div className="animate-slide-in delay-150">
               <MDXRemote source={project.content} components={mdxComponents} />
