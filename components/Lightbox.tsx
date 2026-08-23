@@ -21,11 +21,8 @@ const Lightbox = ({
   const [isLoading, setIsLoading] = useState(true);
   const [touchStart, setTouchStart] = useState<number | null>(null);
   const [touchEnd, setTouchEnd] = useState<number | null>(null);
-  const [mounted, setMounted] = useState(false);
 
   useEffect(() => {
-    setMounted(true);
-    // Lock body scroll when lightbox is open
     document.body.style.overflow = "hidden";
     return () => {
       document.body.style.overflow = "";
@@ -42,9 +39,6 @@ const Lightbox = ({
     setSelectedIndex((selectedIndex - 1 + images.length) % images.length);
   }, [selectedIndex, images.length, setSelectedIndex]);
 
-  useEffect(() => {
-    setIsLoading(true);
-  }, [selectedIndex]);
 
   useEffect(() => {
     const handleKeyDown = (e: KeyboardEvent) => {
@@ -70,8 +64,6 @@ const Lightbox = ({
     if (distance < -50) showPrev();
   };
 
-  if (!mounted) return null;
-
   return createPortal(
     <div
       className="fixed inset-0 z-[9999] flex items-center justify-center bg-black/90 backdrop-blur-sm"
@@ -80,7 +72,6 @@ const Lightbox = ({
     >
       <style>{`@keyframes fadeIn { from { opacity: 0 } to { opacity: 1 } }`}</style>
 
-      {/* Close */}
       <button
         onClick={onClose}
         className="absolute top-4 right-4 z-10 rounded-full cursor-pointer bg-white/10 hover:bg-white/20 p-2 text-white/70 hover:text-white transition-colors"
@@ -89,7 +80,6 @@ const Lightbox = ({
         <LuX className="h-5 w-5" />
       </button>
 
-      {/* Prev */}
       <button
         onClick={(e) => { e.stopPropagation(); showPrev(); }}
         className="absolute left-4 z-10 rounded-full cursor-pointer bg-white/10 hover:bg-white/20 p-3 text-white/70 hover:text-white transition-colors hidden md:flex items-center justify-center"
@@ -98,7 +88,6 @@ const Lightbox = ({
         <LuChevronLeft className="h-6 w-6" />
       </button>
 
-      {/* Next */}
       <button
         onClick={(e) => { e.stopPropagation(); showNext(); }}
         className="absolute right-4 z-10 rounded-full cursor-pointer bg-white/10 hover:bg-white/20 p-3 text-white/70 hover:text-white transition-colors hidden md:flex items-center justify-center"
@@ -107,7 +96,6 @@ const Lightbox = ({
         <LuChevronRight className="h-6 w-6" />
       </button>
 
-      {/* Image area — stops backdrop close on click */}
       <div
         className="relative w-full h-full px-4 md:px-20 py-16 flex items-center justify-center"
         onTouchStart={onTouchStart}
@@ -120,7 +108,7 @@ const Lightbox = ({
           </div>
         )}
 
-        <div className="relative w-full h-full">
+        <div className="relative w-full h-full" onClick={(e) => e.stopPropagation()}>
           <Image
             key={selectedIndex}
             src={images[selectedIndex]}
@@ -136,12 +124,10 @@ const Lightbox = ({
           />
         </div>
 
-        {/* Counter */}
         <div className="absolute bottom-6 left-1/2 -translate-x-1/2 rounded-full bg-black/50 px-4 py-1.5 text-[13px] text-white/80 backdrop-blur-sm font-mono pointer-events-none">
           {selectedIndex + 1} / {images.length}
         </div>
 
-        {/* Mobile nav */}
         <div className="absolute bottom-6 left-4 right-4 flex items-center justify-between z-10 md:hidden">
           <button
             onClick={(e) => { e.stopPropagation(); showPrev(); }}
