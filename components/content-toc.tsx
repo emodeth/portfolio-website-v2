@@ -27,15 +27,20 @@ export function ContentTOC({ items }: ContentTOCProps) {
 
     const handleIntersection = (entries: IntersectionObserverEntry[]) => {
       // Find entries that are intersecting
-      const intersectingEntries = entries.filter((entry) => entry.isIntersecting);
-      
+      const intersectingEntries = entries.filter(
+        (entry) => entry.isIntersecting,
+      );
+
       if (intersectingEntries.length > 0) {
         // Active heading is the first one that entered the viewport region
         setActiveId(intersectingEntries[0].target.id);
       }
     };
 
-    const observer = new IntersectionObserver(handleIntersection, observerOptions);
+    const observer = new IntersectionObserver(
+      handleIntersection,
+      observerOptions,
+    );
 
     items.forEach((item) => {
       const element = document.getElementById(item.id);
@@ -77,23 +82,26 @@ export function ContentTOC({ items }: ContentTOCProps) {
                 const targetEl = document.getElementById(item.id);
                 if (targetEl) {
                   const yOffset = -90; // Adjust for sticky header height
-                  const y = targetEl.getBoundingClientRect().top + window.pageYOffset + yOffset;
+                  const y =
+                    targetEl.getBoundingClientRect().top +
+                    window.pageYOffset +
+                    yOffset;
                   window.scrollTo({ top: y, behavior: "smooth" });
                   setActiveId(item.id);
                 }
               }}
               className="group flex items-center justify-end gap-3 text-right cursor-pointer"
             >
-              {/* Floating label that animates on hover or when active */}
               <span
                 className={`text-[10px] font-semibold tracking-widest uppercase transition-all duration-300 transform opacity-0 translate-x-2 group-hover:opacity-100 group-hover:translate-x-0 ${
-                  isActive ? "text-primary opacity-80 translate-x-0" : "text-muted-foreground/60"
+                  isActive
+                    ? "text-primary opacity-80 translate-x-0"
+                    : "text-muted-foreground/60"
                 }`}
               >
                 {item.title}
               </span>
-              
-              {/* Visual Indicator Lines */}
+
               <span
                 className={`h-1 rounded-full transition-all duration-300 ${
                   isActive
