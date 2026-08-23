@@ -1,37 +1,36 @@
-import { WorkExperience } from "@/lib/types";
-import MarkdownRenderer from "./MarkdownRenderer";
+import { WorkExperienceEntry } from "@/lib/queries";
 
-const formatDateRange = (startDate: Date, endDate: Date | null) => {
-  const start = startDate.getFullYear();
-  const end = endDate ? endDate.getFullYear() : "Present";
-  return `${start} - ${end}`;
-};
-
-const WorkItem = ({ experience }: { experience: WorkExperience }) => {
-  const dateRange = formatDateRange(experience.startDate, experience.endDate);
-
+const WorkItem = ({ experience }: { experience: WorkExperienceEntry }) => {
   return (
-    <div className="flex flex-col gap-2 md:flex-row md:gap-10">
-      <span className="min-w-[120px] font-medium text-gray-1100 hidden md:block">
-        {dateRange}
-      </span>
+    <article className="grid grid-cols-[auto_1fr] gap-x-3 py-5">
+      {/* Dot — sits on the shared timeline line */}
+      <div className="relative z-10 mt-[7px] size-[6px] shrink-0 rounded-full bg-primary" />
 
-      <div className="flex flex-col gap-2">
-        <div className="flex flex-col text-[16px]">
-          <h3 className="font-semibold text-gray-1200">
-            {experience.workTitle}
+      {/* Content */}
+      <div className="space-y-1 pb-2">
+        {/* Title row */}
+        <div className="flex flex-wrap items-baseline justify-between gap-x-4 gap-y-0.5">
+          <h3 className="font-sans text-sm font-semibold text-primary">
+            {experience.title}
           </h3>
-          <p className="text-gray-1100">
-            {experience.companyName} • {experience.type}
-            <span className="md:hidden"> • {dateRange}</span>
-          </p>
+          <time className="shrink-0  text-xs text-muted-foreground tabular-nums">
+            {experience.dateRange}
+          </time>
         </div>
 
-        <div className="max-w-xl text-gray-1100">
-          <MarkdownRenderer>{experience.description}</MarkdownRenderer>
-        </div>
+        {/* Company */}
+        <p className="text-sm text-foreground font-medium">
+          at {experience.company}
+        </p>
+
+        {/* Description */}
+        {experience.description && (
+          <p className="pt-1 text-sm leading-relaxed text-muted-foreground">
+            {experience.description}
+          </p>
+        )}
       </div>
-    </div>
+    </article>
   );
 };
 

@@ -1,88 +1,82 @@
-"use client";
-
-import { useRouter } from "next/navigation";
 import Image from "next/image";
 import Link from "next/link";
-import { Button } from "./ui/button";
-import { IoIosLink, IoLogoGithub, IoLogoYoutube } from "react-icons/io";
-import TechBadge from "./TechBadge";
+import { Globe } from "lucide-react";
+import { IoLogoGithub } from "react-icons/io";
 import { Project } from "@/lib/types";
+import { Tooltip } from "@/components/ui/tooltip";
 
 const ProjectItem = ({ project }: { project: Project }) => {
-  const router = useRouter();
+  const projectHref = `/projects/${project.slug}`;
 
   return (
-    <div
-      className="group flex flex-col overflow-hidden rounded-xl bg-sidebar cursor-pointer transition duration-200"
-      onClick={() => router.push(`/projects/${project.slug}`)}
-    >
-      <div className="p-6 pb-0">
-        <div className="relative aspect-video w-full overflow-hidden rounded-md">
+    <article className="w-full opacity-100 transition-opacity duration-200 group-hover:opacity-30 hover:opacity-100">
+      <Link
+        href={projectHref}
+        aria-label={`View ${project.title} project`}
+        className="block rounded-[10px] bg-card p-1 shadow-[0_0_0_1px_rgba(0,0,0,0.10),0_1px_2px_-1px_rgba(0,0,0,0.08),0_2px_5px_rgba(0,0,0,0.04)] focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-ring dark:shadow-[0_0_0_1px_rgba(255,255,255,0.10)]"
+      >
+        <div className="relative aspect-video w-full overflow-hidden rounded-md bg-muted">
           <Image
             src={project.coverUrl}
-            alt={project.title}
+            alt={`${project.title} preview`}
             fill
-            sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
-            className="object-cover group-hover:scale-105 transition duration-300"
+            quality={100}
+            sizes="(max-width: 640px) calc(100vw - 48px), 592px"
+            className="object-cover outline -outline-offset-1 outline-black/10 dark:outline-white/10"
           />
         </div>
-      </div>
+      </Link>
 
-      <div className="flex flex-1 flex-col p-6 pt-5">
-        <h3 className="mb-2 text-lg font-semibold text-gray-1200">
-          {project.title}
+      <div className="mt-2.5 flex min-h-10 items-center gap-3">
+        <h3 className="min-w-0 flex-1 text-base font-medium leading-5 text-gray-1200 text-balance">
+          <Link
+            href={projectHref}
+            className="rounded-sm underline-offset-4 hover:underline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-ring"
+          >
+            {project.title}
+          </Link>
         </h3>
 
-        <p className="mb-4 line-clamp-3 text-sm text-gray-1100 leading-relaxed">
-          {project.description}
-        </p>
-
-        <div className="mb-5 flex flex-wrap gap-2">
-          {project.techStack.map((tech) => (
-            <TechBadge key={tech.name} tech={tech} />
-          ))}
-        </div>
-
-        <div className="mt-auto flex flex-wrap gap-2">
-          {project.codeUrl && (
-            <Button
-              asChild
-              className="gap-2 rounded-md bg-secondary px-4 py-2 text-sm text-foreground hover:bg-input border-0 transition-colors duration-200"
-              onClick={(e) => e.stopPropagation()}
-            >
-              <Link href={project.codeUrl} target="_blank">
-                <IoLogoGithub className="h-4 w-4" />
-                Source Code
-              </Link>
-            </Button>
-          )}
-          {project.videoUrl && (
-            <Button
-              asChild
-              className="gap-2 rounded-md bg-secondary px-4 py-2 text-sm text-foreground hover:bg-input border-0 transition-colors duration-200"
-              onClick={(e) => e.stopPropagation()}
-            >
-              <Link href={project.videoUrl} target="_blank">
-                <IoLogoYoutube className="h-4 w-4" />
-                Watch Video
-              </Link>
-            </Button>
-          )}
-          {project.demoUrl && (
-            <Button
-              asChild
-              className="gap-2 rounded-md bg-secondary px-4 py-2 text-sm text-foreground hover:bg-input border-0 transition-colors duration-200"
-              onClick={(e) => e.stopPropagation()}
-            >
-              <Link href={project.demoUrl} target="_blank">
-                <IoIosLink className="h-4 w-4" />
-                Live Demo
-              </Link>
-            </Button>
-          )}
-        </div>
+        {(project.demoUrl || project.codeUrl) && (
+          <div
+            className="flex shrink-0 items-center gap-1"
+            role="group"
+            aria-label="Project links"
+          >
+            {project.demoUrl && (
+              <Tooltip content="Website">
+                <Link
+                  href={project.demoUrl}
+                  target="_blank"
+                  rel="noreferrer"
+                  aria-label={`Open ${project.title} website`}
+                  className="flex size-8 items-center justify-center rounded-[8px] text-gray-1100 hover:bg-secondary hover:text-foreground transition-[color,background-color,scale] duration-150 active:scale-[0.96] focus-visible:outline-2 focus-visible:outline-offset-1 focus-visible:outline-ring"
+                >
+                  <Globe className="size-[18px]" aria-hidden="true" />
+                </Link>
+              </Tooltip>
+            )}
+            {project.codeUrl && (
+              <Tooltip content="GitHub">
+                <Link
+                  href={project.codeUrl}
+                  target="_blank"
+                  rel="noreferrer"
+                  aria-label={`View ${project.title} on GitHub`}
+                  className="flex size-8 items-center justify-center rounded-[8px] text-gray-1100 hover:bg-secondary hover:text-foreground transition-[color,background-color,scale] duration-150 active:scale-[0.96] focus-visible:outline-2 focus-visible:outline-offset-1 focus-visible:outline-ring"
+                >
+                  <IoLogoGithub className="size-[18px]" aria-hidden="true" />
+                </Link>
+              </Tooltip>
+            )}
+          </div>
+        )}
       </div>
-    </div>
+
+      <p className="text-pretty text-sm leading-5 text-gray-1100">
+        {project.description}
+      </p>
+    </article>
   );
 };
 

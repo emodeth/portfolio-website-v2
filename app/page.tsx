@@ -1,80 +1,37 @@
 import AboutMe from "@/components/AboutMe";
+
+export const revalidate = 60; // ISR: re-generate at most every 60 seconds
+import Footer from "@/components/Footer";
 import MaxWidthWrapper from "@/components/MaxWidthWrapper";
-import Projects from "@/components/Projects";
+import ProjectsComponent from "@/components/Projects";
 import WorkExperience from "@/components/WorkExperience";
-import { client } from "@/sanity/client";
-import { WorkExperience as WorkExperienceType } from "@/lib/types";
+import { getAboutMe, getProjects, getWorkExperience } from "@/lib/queries";
 
 const Home = async () => {
-  const query = `{
-    "profile": *[_type == "profile"][0]{
-      "id": _id,
-      name,
-      description,
-      jobTitle,
-      mail,
-      githubUrl,
-      imgUrl,
-      "resume": resume.asset->url
-    },
-    "workExperience": *[_type == "workExperience"] | order(startDate desc){
-      "id": _id,
-      companyName,
-      description,
-      type,
-      workTitle,
-      startDate,
-      endDate
-    },
-    "projects": *[_type == "project"] | order(id desc){
-      "id": _id,
-      slug,
-      title,
-      description,
-      "coverUrl": coverUrl.asset->url,
-      videoUrl,
-      codeUrl,
-      demoUrl,
-      "photos": photos[].asset->url,
-      content,
-      techStack[]->{
-        "id": _id,
-        name,
-        iconName
-      }
-    }
-  }`;
+  const [aboutMe, projects, workExperience] = await Promise.all([
+    getAboutMe(),
+    getProjects(),
+    getWorkExperience(),
+  ]);
 
-  const data = await client.fetch(query, {}, {
-    next: { revalidate: 900, tags: ["sanity"] },
-  });
-  const { profile, projects } = data;
-
-  const workExperience: WorkExperienceType[] = data.workExperience.map(
-    (experience: {
-      id: string;
-      companyName: string;
-      description: string;
-      type: string;
-      workTitle: string;
-      startDate: string;
-      endDate: string | null;
-    }) => ({
-      ...experience,
-      startDate: new Date(experience.startDate),
-      endDate: experience.endDate ? new Date(experience.endDate) : null,
-    })
-  );
+  if (!aboutMe) return null;
 
   return (
-    <MaxWidthWrapper>
-      <AboutMe profile={profile} />
-      <WorkExperience workExperience={workExperience} />
-      <Projects projects={projects} />
-    </MaxWidthWrapper>
+    <>
+      <MaxWidthWrapper>
+        <div className="animate-slide-in">
+          <AboutMe data={aboutMe} />
+        </div>
+        <div className="animate-slide-in delay-75">
+          <WorkExperience workExperience={workExperience} />
+        </div>
+        <div className="animate-slide-in delay-100">
+          <ProjectsComponent projects={projects} />
+        </div>
+      </MaxWidthWrapper>
+      <Footer />
+    </>
   );
 };
-
-// Revalidation handled by webhook
 
 export default Home;

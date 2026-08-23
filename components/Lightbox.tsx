@@ -1,6 +1,8 @@
-import { cn } from "@/lib/utils";
+"use client";
+
 import Image from "next/image";
 import { useEffect, useCallback, useState } from "react";
+import { createPortal } from "react-dom";
 import { LuX, LuChevronLeft, LuChevronRight, LuLoader } from "react-icons/lu";
 
 interface LightboxProps {
@@ -10,176 +12,153 @@ interface LightboxProps {
   setSelectedIndex: (index: number) => void;
 }
 
-const LightboxImage = ({ src, alt, onLoad }: { src: string; alt: string, onLoad?: () => void }) => {
-  const [isLoading, setIsLoading] = useState(true);
-
-  return (
-    <>
-      {isLoading && (
-        <div className="absolute inset-0 flex items-center justify-center">
-          <LuLoader className="h-10 w-10 animate-spin text-white/50" />
-        </div>
-      )}
-      <Image
-        src={src}
-        alt={alt}
-        fill
-        sizes="90vw"
-        className={cn(
-          "object-contain transition-all duration-300",
-          isLoading ? "blur-md scale-95 opacity-50" : "blur-0 scale-100 opacity-100"
-        )}
-        priority
-        quality={100}
-        onLoad={() => {
-          setIsLoading(false);
-          onLoad?.();
-        }}
-      />
-    </>
-  );
-};
-
 const Lightbox = ({
   images,
   selectedIndex,
   onClose,
   setSelectedIndex,
 }: LightboxProps) => {
-  // Swipe handling state
+  const [isLoading, setIsLoading] = useState(true);
   const [touchStart, setTouchStart] = useState<number | null>(null);
   const [touchEnd, setTouchEnd] = useState<number | null>(null);
+  const [mounted, setMounted] = useState(false);
+
+  useEffect(() => {
+    setMounted(true);
+    // Lock body scroll when lightbox is open
+    document.body.style.overflow = "hidden";
+    return () => {
+      document.body.style.overflow = "";
+    };
+  }, []);
 
   const showNext = useCallback(() => {
+    setIsLoading(true);
     setSelectedIndex((selectedIndex + 1) % images.length);
   }, [selectedIndex, images.length, setSelectedIndex]);
 
   const showPrev = useCallback(() => {
+    setIsLoading(true);
     setSelectedIndex((selectedIndex - 1 + images.length) % images.length);
   }, [selectedIndex, images.length, setSelectedIndex]);
 
-  // Handle Swipe
-  const onTouchStart = (e: React.TouchEvent) => {
-    setTouchEnd(null); // Reset touch end
-    setTouchStart(e.targetTouches[0].clientX);
-  };
-
-  const onTouchMove = (e: React.TouchEvent) => {
-    setTouchEnd(e.targetTouches[0].clientX);
-  };
-
-  const onTouchEnd = () => {
-    if (!touchStart || !touchEnd) return;
-    const distance = touchStart - touchEnd;
-    const isLeftSwipe = distance > 50;
-    const isRightSwipe = distance < -50;
-
-    if (isLeftSwipe) {
-      showNext();
-    }
-    if (isRightSwipe) {
-      showPrev();
-    }
-  };
+  useEffect(() => {
+    setIsLoading(true);
+  }, [selectedIndex]);
 
   useEffect(() => {
     const handleKeyDown = (e: KeyboardEvent) => {
-      switch (e.key) {
-        case "Escape":
-          onClose();
-          break;
-        case "ArrowRight":
-          showNext();
-          break;
-        case "ArrowLeft":
-          showPrev();
-          break;
-      }
+      if (e.key === "Escape") onClose();
+      if (e.key === "ArrowRight") showNext();
+      if (e.key === "ArrowLeft") showPrev();
     };
-
     window.addEventListener("keydown", handleKeyDown);
     return () => window.removeEventListener("keydown", handleKeyDown);
   }, [showNext, showPrev, onClose]);
 
-  return (
+  const onTouchStart = (e: React.TouchEvent) => {
+    setTouchEnd(null);
+    setTouchStart(e.targetTouches[0].clientX);
+  };
+  const onTouchMove = (e: React.TouchEvent) => {
+    setTouchEnd(e.targetTouches[0].clientX);
+  };
+  const onTouchEnd = () => {
+    if (!touchStart || !touchEnd) return;
+    const distance = touchStart - touchEnd;
+    if (distance > 50) showNext();
+    if (distance < -50) showPrev();
+  };
+
+  if (!mounted) return null;
+
+  return createPortal(
     <div
-      className="fixed inset-0 z-50 flex items-center justify-center bg-black p-0 md:p-4 animate-in fade-in duration-300 backdrop-blur-sm"
+      className="fixed inset-0 z-[9999] flex items-center justify-center bg-black/90 backdrop-blur-sm"
+      style={{ animation: "fadeIn 0.15s ease" }}
       onClick={onClose}
     >
+      <style>{`@keyframes fadeIn { from { opacity: 0 } to { opacity: 1 } }`}</style>
+
+      {/* Close */}
       <button
         onClick={onClose}
-        className="absolute top-4 right-4 z-50 rounded-full cursor-pointer bg-black/50 md:bg-white/10 p-2 text-white/70 hover:bg-white/20 hover:text-white transition-colors"
+        className="absolute top-4 right-4 z-10 rounded-full cursor-pointer bg-white/10 hover:bg-white/20 p-2 text-white/70 hover:text-white transition-colors"
+        aria-label="Close lightbox"
       >
-        <LuX className="h-6 w-6" />
+        <LuX className="h-5 w-5" />
       </button>
 
-      {/* Desktop Navigation */}
+      {/* Prev */}
       <button
-        onClick={(e) => {
-          e.stopPropagation();
-          showPrev();
-        }}
-        className="absolute left-4 z-50 rounded-full cursor-pointer bg-white/10 p-2 text-white/70 hover:bg-white/20 hover:text-white transition-colors disabled:opacity-50 hidden md:block"
+        onClick={(e) => { e.stopPropagation(); showPrev(); }}
+        className="absolute left-4 z-10 rounded-full cursor-pointer bg-white/10 hover:bg-white/20 p-3 text-white/70 hover:text-white transition-colors hidden md:flex items-center justify-center"
+        aria-label="Previous image"
       >
-        <LuChevronLeft className="h-8 w-8" />
+        <LuChevronLeft className="h-6 w-6" />
       </button>
 
+      {/* Next */}
       <button
-        onClick={(e) => {
-          e.stopPropagation();
-          showNext();
-        }}
-        className="absolute right-4 z-50 rounded-full cursor-pointer bg-white/10 p-2 text-white/70 hover:bg-white/20 hover:text-white transition-colors disabled:opacity-50 hidden md:block"
+        onClick={(e) => { e.stopPropagation(); showNext(); }}
+        className="absolute right-4 z-10 rounded-full cursor-pointer bg-white/10 hover:bg-white/20 p-3 text-white/70 hover:text-white transition-colors hidden md:flex items-center justify-center"
+        aria-label="Next image"
       >
-        <LuChevronRight className="h-8 w-8" />
+        <LuChevronRight className="h-6 w-6" />
       </button>
 
+      {/* Image area — stops backdrop close on click */}
       <div
-        className="relative h-full w-full max-h-[100dvh] md:max-h-[90vh] max-w-7xl animate-in zoom-in-95 duration-300 select-none flex items-center justify-center"
-        onClick={(e) => e.stopPropagation()}
+        className="relative w-full h-full px-4 md:px-20 py-16 flex items-center justify-center"
         onTouchStart={onTouchStart}
         onTouchMove={onTouchMove}
         onTouchEnd={onTouchEnd}
       >
-        <LightboxImage
-          key={selectedIndex}
-          src={images[selectedIndex]}
-          alt={`Project screenshot ${selectedIndex + 1}`}
-        />
-
-        {/* Mobile Bottom Controls */}
-        <div className="absolute bottom-8 left-0 right-0 flex items-center justify-center gap-6 z-50 md:hidden pointer-events-none">
-          <button
-            onClick={(e) => {
-              e.stopPropagation();
-              showPrev();
-            }}
-            className="rounded-full bg-zinc-800/80 p-3 text-white border border-zinc-700 pointer-events-auto active:scale-95 transition-transform"
-          >
-            <LuChevronLeft className="h-6 w-6" />
-          </button>
-
-          <div className="rounded-full bg-zinc-800/80 px-4 py-2 text-sm text-white border border-zinc-700 font-medium">
-            {selectedIndex + 1} / {images.length}
+        {isLoading && (
+          <div className="absolute inset-0 flex items-center justify-center pointer-events-none">
+            <LuLoader className="h-8 w-8 animate-spin text-white/40" />
           </div>
+        )}
 
-          <button
-            onClick={(e) => {
-              e.stopPropagation();
-              showNext();
-            }}
-            className="rounded-full bg-zinc-800/80 p-3 text-white border border-zinc-700 pointer-events-auto active:scale-95 transition-transform"
-          >
-            <LuChevronRight className="h-6 w-6" />
-          </button>
+        <div className="relative w-full h-full">
+          <Image
+            key={selectedIndex}
+            src={images[selectedIndex]}
+            alt={`Project screenshot ${selectedIndex + 1}`}
+            fill
+            sizes="(max-width: 768px) 100vw, 90vw"
+            className={`object-contain transition-opacity duration-150 ${
+              isLoading ? "opacity-0" : "opacity-100"
+            }`}
+            priority
+            quality={100}
+            onLoad={() => setIsLoading(false)}
+          />
         </div>
 
-        {/* Desktop Counter */}
-        <div className="absolute bottom-4 left-1/2 -translate-x-1/2 rounded-full bg-black/50 px-4 py-2 text-sm text-white backdrop-blur-sm z-50 hidden md:block">
+        {/* Counter */}
+        <div className="absolute bottom-6 left-1/2 -translate-x-1/2 rounded-full bg-black/50 px-4 py-1.5 text-[13px] text-white/80 backdrop-blur-sm font-mono pointer-events-none">
           {selectedIndex + 1} / {images.length}
         </div>
+
+        {/* Mobile nav */}
+        <div className="absolute bottom-6 left-4 right-4 flex items-center justify-between z-10 md:hidden">
+          <button
+            onClick={(e) => { e.stopPropagation(); showPrev(); }}
+            className="rounded-full bg-white/10 p-3 text-white active:scale-95 transition-transform"
+          >
+            <LuChevronLeft className="h-5 w-5" />
+          </button>
+          <button
+            onClick={(e) => { e.stopPropagation(); showNext(); }}
+            className="rounded-full bg-white/10 p-3 text-white active:scale-95 transition-transform"
+          >
+            <LuChevronRight className="h-5 w-5" />
+          </button>
+        </div>
       </div>
-    </div>
+    </div>,
+    document.body
   );
 };
 
